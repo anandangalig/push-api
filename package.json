@@ -1,0 +1,19 @@
+{
+  "name": "push_api",
+  "version": "1.0.0",
+  "description": "Backend for Push App. Built on GraphQL and Node.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./index.js"
+  },
+  "author": "Push App team",
+  "license": "ISC",
+  "dependencies": {
+    "apollo-server-express": "^1.4.0",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "graphql": "^14.6.0",
+    "graphql-tools": "^4.0.7"
+  }
+}
