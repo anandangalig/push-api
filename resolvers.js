@@ -33,6 +33,13 @@ const getGoalDetails = async (parent, args) => {
   return result;
 };
 
+const deleteGoal = async (parent, args) => {
+  const database = mongoUtils.getDatabase();
+  const result = await database.collection("goals").deleteOne({ _id: ObjectId(args.goalId) });
+
+  return result.deletedCount > 0 ? args.goalId : null;
+};
+
 const resolvers = {
   Query: {
     goals: getGoals,
@@ -41,7 +48,7 @@ const resolvers = {
   Mutation: {
     createGoal: createGoal,
     // updateGoal: updateGoal,
-    // deleteGoal: deleteGoal,
+    deleteGoal: deleteGoal,
   },
 };
 

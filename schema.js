@@ -7,6 +7,7 @@ const typeDefs = gql`
   }
   type Mutation {
     createGoal(goalInput: GoalInput): Goal
+    deleteGoal(goalId: String!): ID
   }
   # General Types:
   type Goal {
