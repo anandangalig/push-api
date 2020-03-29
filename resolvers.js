@@ -1,5 +1,6 @@
 const ObjectId = require("mongodb").ObjectID;
 const mongoUtils = require("./mongoUtils");
+const { omit } = require("ramda");
 
 const getGoals = async () => {
   const database = mongoUtils.getDatabase();
@@ -35,9 +36,23 @@ const getGoalDetails = async (parent, args) => {
 
 const deleteGoal = async (parent, args) => {
   const database = mongoUtils.getDatabase();
-  const result = await database.collection("goals").deleteOne({ _id: ObjectId(args.goalId) });
+  const { deletedCount } = await database
+    .collection("goals")
+    .deleteOne({ _id: ObjectId(args.goalId) });
 
-  return result.deletedCount > 0 ? args.goalId : null;
+  return deletedCount > 0 ? args.goalId : null;
+};
+
+const updateGoal = async (parent, args) => {
+  const database = mongoUtils.getDatabase();
+  const { matchedCount, modifiedCount } = await database
+    .collection("goals")
+    .updateOne(
+      { _id: ObjectId(args.goalInputUpdate._id) },
+      { $set: omit(["_id"], args.goalInputUpdate) },
+    );
+
+  return matchedCount && modifiedCount ? args.goalInputUpdate : null;
 };
 
 const resolvers = {
@@ -47,7 +62,7 @@ const resolvers = {
   },
   Mutation: {
     createGoal: createGoal,
-    // updateGoal: updateGoal,
+    updateGoal: updateGoal,
     deleteGoal: deleteGoal,
   },
 };

@@ -7,7 +7,8 @@ const typeDefs = gql`
   }
   type Mutation {
     createGoal(goalInput: GoalInput): Goal
-    deleteGoal(goalId: String!): ID
+    deleteGoal(goalId: ID!): ID
+    updateGoal(goalInputUpdate: GoalInputUpdate): Goal
   }
   # General Types:
   type Goal {
@@ -22,6 +23,14 @@ const typeDefs = gql`
   input GoalInput {
     title: String!
     cadence: String!
+  }
+  input GoalInputUpdate {
+    _id: ID!
+    title: String
+    cadence: String
+    cadenceCount: Int
+    totalCount: Int
+    timeStamps: [String]
   }
 `;
 
