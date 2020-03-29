@@ -1,11 +1,11 @@
 const MongoClient = require("mongodb").MongoClient;
-const url = "mongodb://localhost:27017";
+require("dotenv").config();
 
 let _db;
-
 module.exports = {
   connectToServer: callback => {
-    MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
+    // eslint-disable-next-line no-undef
+    MongoClient.connect(process.env.MONGO_URI, { useUnifiedTopology: true }, function(err, client) {
       _db = client.db("push_app");
 
       return callback(err, client);
