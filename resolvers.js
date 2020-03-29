@@ -15,8 +15,8 @@ const getGoals = async () => {
 const createGoal = async (parent, args) => {
   const database = mongoUtils.getDatabase();
   const result = await database.collection("goals").insertOne({
-    title: args.goalInput.title,
-    cadence: args.goalInput.cadence,
+    title: args.goalCreateInput.title,
+    cadence: args.goalCreateInput.cadence,
     cadenceCount: 0,
     totalCount: 0,
     timeStamps: [],
@@ -48,11 +48,11 @@ const updateGoal = async (parent, args) => {
   const { matchedCount, modifiedCount } = await database
     .collection("goals")
     .updateOne(
-      { _id: ObjectId(args.goalInputUpdate._id) },
-      { $set: omit(["_id"], args.goalInputUpdate) },
+      { _id: ObjectId(args.goalUpdateInput._id) },
+      { $set: omit(["_id"], args.goalUpdateInput) },
     );
 
-  return matchedCount && modifiedCount ? args.goalInputUpdate : null;
+  return matchedCount && modifiedCount ? args.goalUpdateInput : null;
 };
 
 const resolvers = {

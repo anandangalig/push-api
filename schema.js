@@ -6,9 +6,9 @@ const typeDefs = gql`
     getGoalDetails(goalId: String!): Goal
   }
   type Mutation {
-    createGoal(goalInput: GoalInput): Goal
+    createGoal(goalCreateInput: GoalCreateInput): Goal
     deleteGoal(goalId: ID!): ID
-    updateGoal(goalInputUpdate: GoalInputUpdate): Goal
+    updateGoal(goalUpdateInput: GoalUpdateInput): Goal
   }
   # General Types:
   type Goal {
@@ -20,11 +20,11 @@ const typeDefs = gql`
     timeStamps: [String]
   }
   # Inputs Types:
-  input GoalInput {
+  input GoalCreateInput {
     title: String!
     cadence: String!
   }
-  input GoalInputUpdate {
+  input GoalUpdateInput {
     _id: ID!
     title: String
     cadence: String
