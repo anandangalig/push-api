@@ -2,8 +2,8 @@ const { gql } = require("apollo-server-express");
 
 const typeDefs = gql`
   type Query {
-    goals: [Goal]
     getGoalDetails(goalId: String!): Goal
+    goals: [Goal]
   }
   type Mutation {
     createGoal(goalCreateInput: GoalCreateInput): Goal
@@ -13,24 +13,25 @@ const typeDefs = gql`
   # General Types:
   type Goal {
     _id: ID
-    title: String
     cadence: String
     cadenceCount: Int
-    totalCount: Int
+    creationDate: String
+    creatorID: String
     timeStamps: [String]
+    title: String
   }
   # Inputs Types:
   input GoalCreateInput {
     title: String!
     cadence: String!
+    cadenceCount: Int!
   }
   input GoalUpdateInput {
     _id: ID!
-    title: String
-    cadence: String
-    cadenceCount: Int
-    totalCount: Int
-    timeStamps: [String]
+    cadence: String!
+    cadenceCount: Int!
+    timeStamps: [String]!
+    title: String!
   }
 `;
 

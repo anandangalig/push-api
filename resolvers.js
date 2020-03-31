@@ -1,6 +1,6 @@
-const ObjectId = require("mongodb").ObjectID;
-const mongoUtils = require("./mongoUtils");
+const { ObjectId } = require("mongodb");
 const { omit } = require("ramda");
+const mongoUtils = require("./mongoUtils");
 
 const getGoals = async () => {
   const database = mongoUtils.getDatabase();
@@ -15,11 +15,12 @@ const getGoals = async () => {
 const createGoal = async (parent, args) => {
   const database = mongoUtils.getDatabase();
   const result = await database.collection("goals").insertOne({
-    title: args.goalCreateInput.title,
     cadence: args.goalCreateInput.cadence,
-    cadenceCount: 0,
-    totalCount: 0,
+    cadenceCount: args.goalCreateInput.cadenceCount,
+    creationDate: new Date(),
+    creatorID: "",
     timeStamps: [],
+    title: args.goalCreateInput.title,
   });
 
   return result.ops[0];
@@ -57,13 +58,13 @@ const updateGoal = async (parent, args) => {
 
 const resolvers = {
   Query: {
-    goals: getGoals,
     getGoalDetails: getGoalDetails,
+    goals: getGoals,
   },
   Mutation: {
     createGoal: createGoal,
-    updateGoal: updateGoal,
     deleteGoal: deleteGoal,
+    updateGoal: updateGoal,
   },
 };
 
