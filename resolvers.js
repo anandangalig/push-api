@@ -17,7 +17,7 @@ const createGoal = async (parent, args) => {
   const result = await database.collection("goals").insertOne({
     cadence: args.goalCreateInput.cadence,
     cadenceCount: args.goalCreateInput.cadenceCount,
-    creationDate: new Date(),
+    creationDate: new Date().toISOString(),
     creatorID: "",
     timeStamps: [],
     title: args.goalCreateInput.title,
