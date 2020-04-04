@@ -7,7 +7,7 @@ const resolvers = require("./resolvers");
 // connect to MongoDB server
 mongoUtils.connectToServer((err, client) => {
   if (err) console.error(err);
-  console.log("Client has been established: ", client.s.url);
+  console.log("Client has been established");
 });
 
 // init Apollo server with GraphQL types and resolvers
