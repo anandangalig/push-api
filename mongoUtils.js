@@ -9,6 +9,9 @@ module.exports = {
       process.env.MONGO_ATLAS_URI,
       { useUnifiedTopology: true, useNewUrlParser: true },
       (err, client) => {
+        if (err) {
+          console.error(err);
+        }
         _db = client.db("push");
         return callback(err, client);
       },

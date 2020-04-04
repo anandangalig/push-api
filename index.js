@@ -6,7 +6,9 @@ const resolvers = require("./resolvers");
 
 // connect to MongoDB server
 mongoUtils.connectToServer((err, client) => {
-  if (err) console.error(err);
+  if (err) {
+    console.error(err);
+  }
   console.log("Client has been established");
 });
 
