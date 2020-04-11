@@ -1,10 +1,10 @@
+/* eslint-disable require-atomic-updates */
 /* eslint-disable no-undef */
 const { MongoClient } = require("mongodb");
 require("dotenv").config();
 
+let connection;
 const getMongoConnection = async () => {
-  let connection;
-
   if (connection) {
     return connection;
   }
