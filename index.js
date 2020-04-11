@@ -1,16 +1,7 @@
 const { ApolloServer } = require("apollo-server-express");
 const express = require("express");
-const mongoUtils = require("./mongoUtils");
 const typeDefs = require("./schema");
 const resolvers = require("./resolvers");
-
-// connect to MongoDB server
-mongoUtils.connectToServer((err, client) => {
-  if (err) {
-    console.error(err);
-  }
-  console.log("Client has been established");
-});
 
 // init Apollo server with GraphQL types and resolvers
 const server = new ApolloServer({ typeDefs, resolvers });

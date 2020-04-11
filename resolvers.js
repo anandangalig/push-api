@@ -1,20 +1,17 @@
 const { ObjectId } = require("mongodb");
 const { omit } = require("ramda");
-const mongoUtils = require("./mongoUtils");
+const getMongoConnection = require("./mongoConnect");
 
 const getGoals = async () => {
-  const database = mongoUtils.getDatabase();
-  const goals = await database
-    .collection("goals")
-    .find()
-    .toArray();
+  const mongoConnection = await getMongoConnection();
+  const goals = await mongoConnection.db("push").collection("goals").find().toArray();
 
   return goals;
 };
 
 const createGoal = async (parent, args) => {
-  const database = mongoUtils.getDatabase();
-  const result = await database.collection("goals").insertOne({
+  const mongoConnection = await getMongoConnection();
+  const result = await mongoConnection.db("push").collection("goals").insertOne({
     cadence: args.goalCreateInput.cadence,
     cadenceCount: args.goalCreateInput.cadenceCount,
     creationDate: new Date().toISOString(),
@@ -26,8 +23,9 @@ const createGoal = async (parent, args) => {
   return result.ops[0];
 };
 const getGoalDetails = async (parent, args) => {
-  const database = mongoUtils.getDatabase();
-  const [result] = await database
+  const mongoConnection = await getMongoConnection();
+  const [result] = await mongoConnection
+    .db("push")
     .collection("goals")
     .find({ _id: ObjectId(args.goalId) })
     .toArray();
@@ -36,8 +34,9 @@ const getGoalDetails = async (parent, args) => {
 };
 
 const deleteGoal = async (parent, args) => {
-  const database = mongoUtils.getDatabase();
-  const { deletedCount } = await database
+  const mongoConnection = await getMongoConnection();
+  const { deletedCount } = await mongoConnection
+    .db("push")
     .collection("goals")
     .deleteOne({ _id: ObjectId(args.goalId) });
 
@@ -45,8 +44,9 @@ const deleteGoal = async (parent, args) => {
 };
 
 const updateGoal = async (parent, args) => {
-  const database = mongoUtils.getDatabase();
-  const { matchedCount, modifiedCount } = await database
+  const mongoConnection = await getMongoConnection();
+  const { matchedCount, modifiedCount } = await mongoConnection
+    .db("push")
     .collection("goals")
     .updateOne(
       { _id: ObjectId(args.goalUpdateInput._id) },
