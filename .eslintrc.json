@@ -11,6 +11,7 @@
   "extends": "eslint:recommended",
   "rules": {
     "no-redeclare": "error",
-    "no-unused-vars": "error"
+    "no-unused-vars": "error",
+    "require-atomic-updates": "off"
   }
 }

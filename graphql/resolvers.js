@@ -1,7 +1,12 @@
 const { ObjectId } = require("mongodb");
 const { omit } = require("ramda");
-const getMongoConnection = require("./mongoConnect");
+const argon2 = require("argon2");
+const { randomBytes } = require("crypto");
 
+const getMongoConnection = require("../mongoConnect");
+const { generateJWT } = require("../helpers");
+
+// ============== GOALS: ==============================================
 const getGoals = async () => {
   const mongoConnection = await getMongoConnection();
   const goals = await mongoConnection.db("push").collection("goals").find().toArray();
@@ -56,6 +61,27 @@ const updateGoal = async (parent, args) => {
   return matchedCount && modifiedCount ? args.goalUpdateInput : null;
 };
 
+// ============== USERS: ==============================================
+
+const userSignUp = async (parent, { userName, password, email }) => {
+  const passwordHashed = await argon2.hash(password, { salt: randomBytes(32) }); //https://nodejs.org/api/crypto.html#crypto_crypto_randombytes_size_callback
+
+  const mongoConnection = await getMongoConnection();
+  const { insertedId } = await mongoConnection.db("push").collection("users").insertOne({
+    userName,
+    password: passwordHashed,
+    email,
+  });
+
+  const token = insertedId ? generateJWT({ insertedId, userName, email }) : null;
+
+  return {
+    token,
+    email,
+    userName,
+  };
+};
+
 const resolvers = {
   Query: {
     getGoalDetails: getGoalDetails,
@@ -65,6 +91,7 @@ const resolvers = {
     createGoal: createGoal,
     deleteGoal: deleteGoal,
     updateGoal: updateGoal,
+    userSignUp: userSignUp,
   },
 };
 

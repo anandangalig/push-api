@@ -1,4 +1,3 @@
-/* eslint-disable require-atomic-updates */
 /* eslint-disable no-undef */
 const { MongoClient } = require("mongodb");
 require("dotenv").config();

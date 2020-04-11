@@ -9,6 +9,7 @@ const typeDefs = gql`
     createGoal(goalCreateInput: GoalCreateInput): Goal
     deleteGoal(goalId: ID!): ID
     updateGoal(goalUpdateInput: GoalUpdateInput): Goal
+    userSignUp(userName: String, password: String, email: String): AuthConfirmation
   }
   # General Types:
   type Goal {
@@ -19,6 +20,11 @@ const typeDefs = gql`
     creatorID: String
     timeStamps: [String]
     title: String
+  }
+  type AuthConfirmation {
+    token: String
+    email: String
+    userName: String
   }
   # Inputs Types:
   input GoalCreateInput {
