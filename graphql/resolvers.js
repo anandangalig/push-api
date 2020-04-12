@@ -81,10 +81,33 @@ const userSignUp = async (parent, { userName, password, email }) => {
   };
 };
 
+const userLogin = async (parent, { email, password }) => {
+  const mongoConnection = await getMongoConnection();
+  const userRecord = await mongoConnection.db("push").collection("users").findOne({ email });
+
+  if (!userRecord) {
+    throw new Error("User not found");
+  } else {
+    const correctPassword = await argon2.verify(userRecord.password, password);
+    if (!correctPassword) {
+      throw new Error("Incorrect password");
+    }
+  }
+
+  const token = userRecord ? generateJWT(userRecord) : null;
+
+  return {
+    token,
+    email,
+    userName: userRecord.userName,
+  };
+};
+
 const resolvers = {
   Query: {
     getGoalDetails: getGoalDetails,
     goals: getGoals,
+    userLogin: userLogin,
   },
   Mutation: {
     createGoal: createGoal,

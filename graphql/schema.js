@@ -4,12 +4,13 @@ const typeDefs = gql`
   type Query {
     getGoalDetails(goalId: String!): Goal
     goals: [Goal]
+    userLogin(email: String!, password: String!): AuthConfirmation
   }
   type Mutation {
     createGoal(goalCreateInput: GoalCreateInput): Goal
     deleteGoal(goalId: ID!): ID
     updateGoal(goalUpdateInput: GoalUpdateInput): Goal
-    userSignUp(userName: String, password: String, email: String): AuthConfirmation
+    userSignUp(userName: String!, email: String!, password: String!): AuthConfirmation
   }
   # General Types:
   type Goal {
