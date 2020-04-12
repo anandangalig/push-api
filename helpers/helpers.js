@@ -14,6 +14,4 @@ const generateJWT = ({ insertedId, userName, email }) => {
   );
 };
 
-module.exports = {
-  generateJWT: generateJWT,
-};
+module.exports = generateJWT;

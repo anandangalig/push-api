@@ -3,8 +3,7 @@ const { omit } = require("ramda");
 const argon2 = require("argon2");
 const { randomBytes } = require("crypto");
 
-const getMongoConnection = require("../mongoConnect");
-const { generateJWT } = require("../helpers");
+const { getMongoConnection, generateJWT } = require("../helpers");
 
 // ============== GOALS: ==============================================
 const getGoals = async () => {
