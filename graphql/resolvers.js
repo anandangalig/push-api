@@ -1,12 +1,10 @@
 const { ObjectId } = require("mongodb");
 const { omit } = require("ramda");
-const argon2 = require("argon2");
-const { randomBytes } = require("crypto");
+const { getMongoConnection } = require("../helpers");
 
-const { getMongoConnection, generateJWT } = require("../helpers");
+const getGoals = async (parent, args, context) => {
+  console.log({ parent, args, context });
 
-// ============== GOALS: ==============================================
-const getGoals = async () => {
   const mongoConnection = await getMongoConnection();
   const goals = await mongoConnection.db("push").collection("goals").find().toArray();
 
@@ -60,60 +58,15 @@ const updateGoal = async (parent, args) => {
   return matchedCount && modifiedCount ? args.goalUpdateInput : null;
 };
 
-// ============== USERS: ==============================================
-
-const userSignUp = async (parent, { userName, password, email }) => {
-  const passwordHashed = await argon2.hash(password, { salt: randomBytes(32) }); //https://nodejs.org/api/crypto.html#crypto_crypto_randombytes_size_callback
-
-  const mongoConnection = await getMongoConnection();
-  const { insertedId } = await mongoConnection.db("push").collection("users").insertOne({
-    userName,
-    password: passwordHashed,
-    email,
-  });
-
-  const token = insertedId ? generateJWT({ insertedId, userName, email }) : null;
-
-  return {
-    token,
-    email,
-    userName,
-  };
-};
-
-const userLogin = async (parent, { email, password }) => {
-  const mongoConnection = await getMongoConnection();
-  const userRecord = await mongoConnection.db("push").collection("users").findOne({ email });
-
-  if (!userRecord) {
-    throw new Error("User not found");
-  } else {
-    const correctPassword = await argon2.verify(userRecord.password, password);
-    if (!correctPassword) {
-      throw new Error("Incorrect password");
-    }
-  }
-
-  const token = userRecord ? generateJWT(userRecord) : null;
-
-  return {
-    token,
-    email,
-    userName: userRecord.userName,
-  };
-};
-
 const resolvers = {
   Query: {
     getGoalDetails: getGoalDetails,
     goals: getGoals,
-    userLogin: userLogin,
   },
   Mutation: {
     createGoal: createGoal,
     deleteGoal: deleteGoal,
     updateGoal: updateGoal,
-    userSignUp: userSignUp,
   },
 };
 

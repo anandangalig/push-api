@@ -1,3 +1,4 @@
+const { ObjectId } = require("mongodb");
 const { getMongoConnection } = require("../helpers");
 
 module.exports = async (req, res, next) => {
@@ -7,7 +8,7 @@ module.exports = async (req, res, next) => {
     const userRecord = await mongoConnection
       .db("push")
       .collection("users")
-      .findOne({ _id: decodedTokenData._id });
+      .findOne({ _id: ObjectId(decodedTokenData.data._id) });
 
     req.currentUser = userRecord;
 

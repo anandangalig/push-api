@@ -1,10 +1,10 @@
 const jwt = require("jsonwebtoken");
 
-const generateJWT = ({ insertedId, userName, email }) => {
+const generateJWT = ({ _id, userName, email }) => {
   return jwt.sign(
     {
       data: {
-        _id: insertedId,
+        _id,
         userName,
         email,
       },
