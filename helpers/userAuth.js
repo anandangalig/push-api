@@ -1,10 +1,14 @@
 const argon2 = require("argon2");
 const { randomBytes } = require("crypto");
+const { isNil } = require("ramda");
 const generateJWT = require("./jwt");
 const getMongoConnection = require("./mongoConnect");
 
 const userSignUp = async (req, res) => {
   const { userName, password, email } = req.body;
+  if ([userName, password, email].some((each) => isNil(each))) {
+    res.status(400).end("All fields need to be sent with request");
+  }
   const salt = randomBytes(32);
   const passwordHashed = await argon2.hash(password, { salt }); //https://nodejs.org/api/crypto.html#crypto_crypto_randombytes_size_callback
 
