@@ -31,12 +31,11 @@ const userLogin = async (req, res) => {
   const userRecord = await mongoConnection.db("push").collection("users").findOne({ email });
 
   if (!userRecord) {
-    throw new Error("User not found");
+    res.status(404).send("User Not Found");
   } else {
     const correctPassword = await argon2.verify(userRecord.password, password);
     if (!correctPassword) {
-      throw new Error("Incorrect password");
-      // send res.send response
+      res.status(401).send("Incorrect Password");
     }
   }
 
