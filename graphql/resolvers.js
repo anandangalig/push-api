@@ -2,28 +2,34 @@ const { ObjectId } = require("mongodb");
 const { omit } = require("ramda");
 const { getMongoConnection } = require("../helpers");
 
-const getGoals = async (parent, args, context) => {
-  console.log({ parent, args, context });
-
+const getGoals = async (parent, args, { currentUserID }) => {
   const mongoConnection = await getMongoConnection();
-  const goals = await mongoConnection.db("push").collection("goals").find().toArray();
+  const goals = await mongoConnection
+    .db("push")
+    .collection("goals")
+    .find({ creatorID: ObjectId(currentUserID) })
+    .toArray();
 
   return goals;
 };
 
-const createGoal = async (parent, args) => {
+const createGoal = async (parent, args, { currentUserID }) => {
   const mongoConnection = await getMongoConnection();
-  const result = await mongoConnection.db("push").collection("goals").insertOne({
-    cadence: args.goalCreateInput.cadence,
-    cadenceCount: args.goalCreateInput.cadenceCount,
-    creationDate: new Date().toISOString(),
-    creatorID: "",
-    timeStamps: [],
-    title: args.goalCreateInput.title,
-  });
+  const result = await mongoConnection
+    .db("push")
+    .collection("goals")
+    .insertOne({
+      cadence: args.goalCreateInput.cadence,
+      cadenceCount: args.goalCreateInput.cadenceCount,
+      creationDate: new Date().toISOString(),
+      creatorID: ObjectId(currentUserID),
+      timeStamps: [],
+      title: args.goalCreateInput.title,
+    });
 
   return result.ops[0];
 };
+
 const getGoalDetails = async (parent, args) => {
   const mongoConnection = await getMongoConnection();
   const [result] = await mongoConnection

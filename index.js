@@ -24,7 +24,9 @@ const server = new ApolloServer({
 app.post("/signup", bodyParser.json(), userSignUp);
 app.get("/login", bodyParser.json(), userLogin);
 // Add custom middlewares
-app.post("/graphql", verifyAndAttachJWTData, attachCurrentUser, server.getMiddleware()); // all operations except Signup and Login should be sent to this endpoint
+app.post("/graphql", verifyAndAttachJWTData, attachCurrentUser);
+// Connect Express server with Apollo server
+server.applyMiddleware({ app: app });
 
 app.listen({ port: 4000 }, () =>
   console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`),
