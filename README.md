@@ -22,3 +22,9 @@
 - `/signup` expexts a POST request. Include user info in JSON format in the request body
 - `/login` expexts a GET request. Include user info in JSON format in the request body
 - `/graphql` expects a POST request
+
+**GraphQL Playground:**
+
+When using the Playground, make sure to include a valid JWT in the `HTTP HEADERS` panel:
+
+> { "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9eyJkYXRhIjp7Il9pZCI6IjVlOWI4NGYzMjA2MWU5NDQxZjVlOGJjNyIsInVzZXJOYW1lIjoiQ3J1eiIsImVtYWlsIjoiY3J1ekBnbWFpbC5jb20ifSwiaWF0IjoxNTg3MzE0ODYzCJleHAiOjE1ODczMzY0NjN9.G_DUSeeY_34lWWCMGODIUUYsFKxKS0PAnJSBN-Rtzkc" }
