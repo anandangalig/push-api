@@ -16,3 +16,9 @@
 2. Run `npm install` to install all dependencies
 3. Run `npm start` to start the server
 4. http://localhost:4000/graphql will be up and running to receive requests from your locally running frontend app. You can also visit this page on your web browser to see the GraphQL Playground.
+
+**Express Related:**
+
+- `/signup` expexts a POST request. Include user info in JSON format in the request body
+- `/login` expexts a GET request. Include user info in JSON format in the request body
+- `/graphql` expects a POST request

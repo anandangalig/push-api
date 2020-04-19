@@ -52,6 +52,7 @@ const deleteGoal = async (parent, args) => {
 };
 
 const updateGoal = async (parent, args) => {
+  //TODO: sending the whole object is inefficient. Need to refactor this to send only the updated fields.
   const mongoConnection = await getMongoConnection();
   const { matchedCount, modifiedCount } = await mongoConnection
     .db("push")
