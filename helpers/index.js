@@ -1,4 +1,4 @@
-const generateJWT = require("./helpers");
+const generateJWT = require("./jwt");
 const getMongoConnection = require("./mongoConnect");
 const { userLogin, userSignUp } = require("./userAuth");
 

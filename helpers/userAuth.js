@@ -1,6 +1,6 @@
 const argon2 = require("argon2");
 const { randomBytes } = require("crypto");
-const generateJWT = require("./helpers");
+const generateJWT = require("./jwt");
 const getMongoConnection = require("./mongoConnect");
 
 const userSignUp = async (req, res) => {
