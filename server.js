@@ -35,5 +35,5 @@ server.applyMiddleware({ app: app });
 
 
 app.listen({ port:process.env.PORT || 4000 }, () =>
-  console.log(`🚀 Server ready at` + ":"),
+  console.log(`🚀 Server ready at` +" " + "Localhost:4000"),
 );
