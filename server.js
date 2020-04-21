@@ -22,7 +22,7 @@ const server = new ApolloServer({
 
 // Handle user signup and login:
 app.post("/signup", bodyParser.json(), userSignUp);
-app.get("/login", bodyParser.json(), userLogin);
+app.post("/login", bodyParser.json(), userLogin);
 // Add custom middlewares
 app.post("/graphql", verifyAndAttachJWTData, attachCurrentUser);
 // Connect Express server with Apollo server
