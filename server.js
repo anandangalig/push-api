@@ -16,9 +16,14 @@ const app = express();
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  introspection: true,
+  playground: true,
   context: (request) =>
     isNil(request.req.currentUser) ? null : { currentUserID: request.req.currentUser._id },
 });
+
+
+app.get('/', (req, res) => res.send("Welcome Push User"));
 
 // Handle user signup and login:
 app.post("/signup", bodyParser.json(), userSignUp);
@@ -28,6 +33,7 @@ app.post("/graphql", verifyAndAttachJWTData, attachCurrentUser);
 // Connect Express server with Apollo server
 server.applyMiddleware({ app: app });
 
-app.listen({ port: 4000 }, () =>
-  console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`),
+
+app.listen({ port:process.env.PORT || 4000 }, () =>
+  console.log(`🚀 Server ready at` +" " + "Localhost:4000"),
 );
