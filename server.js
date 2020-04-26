@@ -6,7 +6,7 @@ const { isNil } = require("ramda");
 const typeDefs = require("./graphql/schema");
 const resolvers = require("./graphql/resolvers");
 const { attachCurrentUser, verifyAndAttachJWTData } = require("./middleware");
-const { userLogin, userSignUp } = require("./helpers");
+const { userLogin, userSignUp, forgotPassword } = require("./helpers");
 
 require("dotenv").config();
 
@@ -27,6 +27,7 @@ app.get("/", (req, res) => res.send("Welcome Push User"));
 // Handle user signup and login:
 app.post("/signup", bodyParser.json(), userSignUp);
 app.get("/login", bodyParser.json(), userLogin);
+app.post("/forgot-password", bodyParser.json(), forgotPassword);
 // Add custom middlewares
 app.post("/graphql", verifyAndAttachJWTData, attachCurrentUser);
 // Connect Express server with Apollo server
