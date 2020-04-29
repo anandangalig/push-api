@@ -6,7 +6,7 @@ const { isNil } = require("ramda");
 const typeDefs = require("./graphql/schema");
 const resolvers = require("./graphql/resolvers");
 const { attachCurrentUser, verifyAndAttachJWTData } = require("./middleware");
-const { userLogin, userSignUp, forgotPassword } = require("./helpers");
+const { userLogin, userSignUp, forgotPassword, resetPassword } = require("./helpers");
 
 require("dotenv").config();
 
@@ -22,14 +22,22 @@ const server = new ApolloServer({
     isNil(request.req.currentUser) ? null : { currentUserID: request.req.currentUser._id },
 });
 
-app.get("/", (req, res) => res.send("Welcome Push User"));
+app.get("/", (req, res) => res.send("Welcome Push Pirates!"));
 
 // Handle user signup and login:
 app.post("/signup", bodyParser.json(), userSignUp);
 app.get("/login", bodyParser.json(), userLogin);
+
+// Handle password reset:
 app.post("/forgot-password", bodyParser.json(), forgotPassword);
-// Add custom middlewares
+app.get("/reset-password-form", (req, res) =>
+  res.sendFile(__dirname + "/assets/password-reset.html"),
+);
+app.post("/reset-password", bodyParser.urlencoded({ extended: true }), resetPassword);
+
+// Add custom middlewares to all other requests:
 app.post("/graphql", verifyAndAttachJWTData, attachCurrentUser);
+
 // Connect Express server with Apollo server
 server.applyMiddleware({ app: app });
 

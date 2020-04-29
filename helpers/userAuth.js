@@ -68,7 +68,6 @@ const forgotPassword = async (req, res) => {
 
   //2. if email is found, generate JWT:
   const token = userRecord ? generatePasswordResetToken(userRecord) : null;
-  console.log(token);
 
   //3.send that email:
   var transporter = nodemailer.createTransport({
@@ -85,12 +84,17 @@ const forgotPassword = async (req, res) => {
       to: "anandangalig@gmail.com",
       subject: "Message",
       date: new Date(),
-      html: `<h1>Hello there!</h1><p>That was easy!</p><p>http://localhost.com?token=${token}</p>`,
+      html: `
+      <p>Hey ${userRecord.userName},</p>
+      <p>Good news! We processed your request to reset your password.</p>
+      <p>Please click on the following link to create a new one. This one time use link will expire in one hour.</p>
+      <p>${process.env.API_URL}/reset-password?token=${token}</p>
+      <p>Best regards,<br>Push Pirates.</p>`,
     },
     (error, info) => {
       if (error) {
         console.log(error);
-        res.status(500).end("Email was could not be sent");
+        res.status(500).end("Email could not be sent");
       } else {
         console.log("Email sent: " + info.response);
         res.send(`Password reset link has been sent to ${req.body.email}`);
@@ -99,8 +103,13 @@ const forgotPassword = async (req, res) => {
   );
 };
 
+const resetPassword = async (req, res) => {
+  console.log(req.body);
+};
+
 module.exports = {
   userSignUp,
   userLogin,
   forgotPassword,
+  resetPassword,
 };
