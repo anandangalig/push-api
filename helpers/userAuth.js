@@ -4,6 +4,8 @@ const { isNil } = require("ramda");
 const { generateJWT, generatePasswordResetToken } = require("./jwt");
 const getMongoConnection = require("./mongoConnect");
 const nodemailer = require("nodemailer");
+const jwt = require("jsonwebtoken");
+const { ObjectId } = require("mongodb");
 
 const userSignUp = async (req, res) => {
   const { userName, password, email } = req.body;
@@ -88,7 +90,7 @@ const forgotPassword = async (req, res) => {
       <p>Hey ${userRecord.userName},</p>
       <p>Good news! We processed your request to reset your password.</p>
       <p>Please click on the following link to create a new one. This one time use link will expire in one hour.</p>
-      <p>${process.env.API_URL}/reset-password?token=${token}</p>
+      <p>${process.env.API_URL}/reset-password?uid=${userRecord._id}&token=${token}</p>
       <p>Best regards,<br>Push Pirates.</p>`,
     },
     (error, info) => {
@@ -104,7 +106,45 @@ const forgotPassword = async (req, res) => {
 };
 
 const resetPassword = async (req, res) => {
-  console.log(req.body);
+  const { newPassword, newPasswordConfirm } = req.body;
+  const { token, uid } = req.query;
+  if (newPassword !== newPasswordConfirm) {
+    res.status(400).end("The two input values did not match");
+  }
+  if (!token || !uid) {
+    res.status(400).end("One time use token or uid missing from request");
+  }
+  const mongoConnection = await getMongoConnection();
+  const userRecord = await mongoConnection
+    .db("push")
+    .collection("users")
+    .findOne({ _id: ObjectId(uid) });
+
+  if (!userRecord) {
+    res.status(404).end("User Not Found");
+  }
+  const secret = userRecord.password + "-" + userRecord.createdDate;
+
+  jwt.verify(token, secret, async (err, decoded) => {
+    if (err) {
+      console.error(err);
+      res.status(401).end(err.message);
+    } else {
+      const { userId, email, userName } = decoded;
+      const salt = randomBytes(32);
+      const passwordHashed = await argon2.hash(newPassword, { salt });
+      const { matchedCount, modifiedCount } = await mongoConnection
+        .db("push")
+        .collection("users")
+        .updateOne(
+          { _id: ObjectId(userId), email, userName },
+          { $set: { password: passwordHashed, salt: salt } },
+        );
+      if (matchedCount && modifiedCount) {
+        res.send("Your password has been reset successfully!");
+      }
+    }
+  });
 };
 
 module.exports = {

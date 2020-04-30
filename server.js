@@ -30,9 +30,8 @@ app.get("/login", bodyParser.json(), userLogin);
 
 // Handle password reset:
 app.post("/forgot-password", bodyParser.json(), forgotPassword);
-app.get("/reset-password-form", (req, res) =>
-  res.sendFile(__dirname + "/assets/password-reset.html"),
-);
+
+app.get("/reset-password", (req, res) => res.sendFile(__dirname + "/assets/password-reset.html"));
 app.post("/reset-password", bodyParser.urlencoded({ extended: true }), resetPassword);
 
 // Add custom middlewares to all other requests:

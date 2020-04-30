@@ -14,9 +14,15 @@ const generateJWT = ({ _id, userName, email }) => {
   );
 };
 
-const generatePasswordResetToken = ({ _id: userId, password: passwordHash, createdDate }) => {
+const generatePasswordResetToken = ({
+  _id: userId,
+  password: passwordHash,
+  createdDate,
+  userName,
+  email,
+}) => {
   const secret = passwordHash + "-" + createdDate;
-  const token = jwt.sign({ userId }, secret, {
+  const token = jwt.sign({ userId, userName, email }, secret, {
     expiresIn: 3600,
   });
   return token;
