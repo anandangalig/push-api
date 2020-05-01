@@ -22,7 +22,9 @@ const server = new ApolloServer({
     isNil(request.req.currentUser) ? null : { currentUserID: request.req.currentUser._id },
 });
 
-app.get("/", (req, res) => res.send("Welcome Push Pirates!"));
+app.use(express.static("assets"));
+
+app.get("/", (_, res) => res.send("Welcome Push Pirates!"));
 
 // Handle user signup and login:
 app.post("/signup", bodyParser.json(), userSignUp);
@@ -31,7 +33,7 @@ app.get("/login", bodyParser.json(), userLogin);
 // Handle password reset:
 app.post("/forgot-password", bodyParser.json(), forgotPassword);
 
-app.get("/reset-password", (req, res) => res.sendFile(__dirname + "/assets/password-reset.html"));
+app.get("/reset-password", (_, res) => res.sendFile(__dirname + "/assets/password-reset.html"));
 app.post("/reset-password", bodyParser.urlencoded({ extended: true }), resetPassword);
 
 // Add custom middlewares to all other requests:
