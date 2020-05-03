@@ -5,7 +5,7 @@ const { isNil } = require("ramda");
 
 const typeDefs = require("./graphql/schema");
 const resolvers = require("./graphql/resolvers");
-const { attachCurrentUser, verifyAndAttachJWTData } = require("./middleware");
+const { attachCurrentUser, verifyAndAttachJWTData, validateInput } = require("./middleware");
 const { userLogin, userSignUp, forgotPassword, resetPassword } = require("./helpers");
 
 require("dotenv").config();
@@ -22,19 +22,20 @@ const server = new ApolloServer({
     isNil(request.req.currentUser) ? null : { currentUserID: request.req.currentUser._id },
 });
 
-app.use(express.static("assets"));
-
 app.get("/", (_, res) => res.send("Welcome Push Pirates!"));
 
+app.use(express.static("assets")); //allows access to /assets dir
+app.use(bodyParser.json()); //allows pulling info from body in JSON format
+app.use(bodyParser.urlencoded({ extended: true })); //allows accessto URL params
+
 // Handle user signup and login:
-app.post("/signup", bodyParser.json(), userSignUp);
-app.get("/login", bodyParser.json(), userLogin);
+app.get("/login", userLogin);
+app.post("/signup", validateInput(["userName", "password", "email"]), userSignUp);
 
 // Handle password reset:
-app.post("/forgot-password", bodyParser.json(), forgotPassword);
-
 app.get("/reset-password", (_, res) => res.sendFile(__dirname + "/assets/password-reset.html"));
-app.post("/reset-password", bodyParser.urlencoded({ extended: true }), resetPassword);
+app.post("/reset-password", validateInput(["newPassword", "newPasswordConfirm"]), resetPassword);
+app.post("/forgot-password", validateInput(["email"]), forgotPassword);
 
 // Add custom middlewares to all other requests:
 app.post("/graphql", verifyAndAttachJWTData, attachCurrentUser);
@@ -42,6 +43,6 @@ app.post("/graphql", verifyAndAttachJWTData, attachCurrentUser);
 // Connect Express server with Apollo server
 server.applyMiddleware({ app: app });
 
-app.listen({ port: process.env.PORT || 4000 }, () =>
-  console.log(`🚀 Server ready at http://localhost:4000`),
-);
+app.listen({ port: process.env.PORT || 4000 }, () => {
+  console.log("🚀 Server is up and running");
+});

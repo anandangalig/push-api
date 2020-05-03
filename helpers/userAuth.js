@@ -44,16 +44,15 @@ const userLogin = async (req, res) => {
     const correctPassword = await argon2.verify(userRecord.password, password);
     if (!correctPassword) {
       res.status(401).end("Incorrect Password");
+    } else {
+      const token = userRecord ? generateJWT(userRecord) : null;
+      res.send({
+        token,
+        email,
+        userName: userRecord.userName,
+      });
     }
   }
-
-  const token = userRecord ? generateJWT(userRecord) : null;
-
-  res.send({
-    token,
-    email,
-    userName: userRecord.userName,
-  });
 };
 
 const forgotPassword = async (req, res) => {
