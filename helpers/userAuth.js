@@ -10,12 +10,27 @@ const { ObjectId } = require("mongodb");
 const userSignUp = async (req, res) => {
   const { userName, password, email } = req.body;
   if ([userName, password, email].some((each) => isNil(each))) {
-    res.status(400).end("All fields need to be sent with request");
+    res.status(400).end("All fields (username, password, email) are required");
+    return;
   }
-  const salt = randomBytes(32);
-  const passwordHashed = await argon2.hash(password, { salt }); //https://nodejs.org/api/crypto.html#crypto_crypto_randombytes_size_callback
 
   const mongoConnection = await getMongoConnection();
+  const emailAlreadyExists = await mongoConnection
+    .db("push")
+    .collection("users")
+    .findOne({ email });
+
+  if (emailAlreadyExists) {
+    res
+      .status(401)
+      .end(
+        `${email} is already registered to a user. If you forgot your password, please reset it from the app.`,
+      );
+    return;
+  }
+
+  const salt = randomBytes(32);
+  const passwordHashed = await argon2.hash(password, { salt }); //https://nodejs.org/api/crypto.html#crypto_crypto_randombytes_size_callback
   const { insertedId } = await mongoConnection.db("push").collection("users").insertOne({
     userName,
     email,
@@ -44,19 +59,19 @@ const userLogin = async (req, res) => {
     const correctPassword = await argon2.verify(userRecord.password, password);
     if (!correctPassword) {
       res.status(401).end("Incorrect Password");
-    } else {
-      const token = userRecord ? generateJWT(userRecord) : null;
-      res.send({
-        token,
-        email,
-        userName: userRecord.userName,
-      });
+      return;
     }
+
+    const token = userRecord ? generateJWT(userRecord) : null;
+    res.send({
+      token,
+      email,
+      userName: userRecord.userName,
+    });
   }
 };
 
 const forgotPassword = async (req, res) => {
-  //1. check for email, return No email found if not found
   const mongoConnection = await getMongoConnection();
   const userRecord = await mongoConnection
     .db("push")
@@ -65,13 +80,12 @@ const forgotPassword = async (req, res) => {
 
   if (!userRecord) {
     res.status(404).end("Email Not Found");
+    return;
   }
 
-  //2. if email is found, generate JWT:
   const token = userRecord ? generatePasswordResetToken(userRecord) : null;
 
-  //3.send that email:
-  var transporter = nodemailer.createTransport({
+  const transporter = nodemailer.createTransport({
     service: "Gmail",
     auth: {
       user: process.env.GMAIL_USERNAME,
@@ -109,10 +123,13 @@ const resetPassword = async (req, res) => {
   const { token, uid } = req.query;
   if (newPassword !== newPasswordConfirm) {
     res.status(400).end("The two input values did not match");
+    return;
   }
   if (!token || !uid) {
     res.status(400).end("One time use token or uid missing from request");
+    return;
   }
+
   const mongoConnection = await getMongoConnection();
   const userRecord = await mongoConnection
     .db("push")
@@ -121,9 +138,10 @@ const resetPassword = async (req, res) => {
 
   if (!userRecord) {
     res.status(404).end("User Not Found");
+    return;
   }
-  const secret = userRecord.password + "-" + userRecord.createdDate;
 
+  const secret = userRecord.password + "-" + userRecord.createdDate;
   jwt.verify(token, secret, async (err, decoded) => {
     if (err) {
       console.error(err);
