@@ -96,8 +96,8 @@ const forgotPassword = async (req, res) => {
   transporter.sendMail(
     {
       from: "hello.xyzapp@gmail.com",
-      to: "anandangalig@gmail.com",
-      subject: "Message",
+      to: `${req.body.email}`,
+      subject: "Push Pirates password reset request",
       date: new Date(),
       html: `
       <p>Hey ${userRecord.userName},</p>
