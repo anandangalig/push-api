@@ -23,7 +23,7 @@ const generatePasswordResetToken = ({
 }) => {
   const secret = passwordHash + "-" + createdDate;
   const token = jwt.sign({ userId, userName, email }, secret, {
-    expiresIn: 3600,
+    expiresIn: "3h",
   });
   return token;
 };

@@ -102,7 +102,7 @@ const forgotPassword = async (req, res) => {
       html: `
       <p>Hey ${userRecord.userName},</p>
       <p>Good news! We processed your request to reset your password.</p>
-      <p>Please click on the following link to create a new one. This one time use link will expire in one hour.</p>
+      <p>Please click on the following link to create a new one. This one time use link will expire in three hours.</p>
       <p>${process.env.API_URL}/reset-password?uid=${userRecord._id}&token=${token}</p>
       <p>Best regards,<br>Push Pirates.</p>`,
     },
