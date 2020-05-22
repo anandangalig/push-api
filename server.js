@@ -29,7 +29,7 @@ app.use(bodyParser.json()); //allows pulling info from body in JSON format
 app.use(bodyParser.urlencoded({ extended: true })); //allows accessto URL params
 
 // Handle user signup and login:
-app.get("/login", userLogin);
+app.post("/login", userLogin);
 app.post("/signup", validateInput(["userName", "password", "email"]), userSignUp);
 
 // Handle password reset:
