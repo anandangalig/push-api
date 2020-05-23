@@ -8,9 +8,9 @@ const jwt = require("jsonwebtoken");
 const { ObjectId } = require("mongodb");
 
 const userSignUp = async (req, res) => {
-  const { userName, password, email } = req.body;
-  if ([userName, password, email].some((each) => isNil(each))) {
-    res.status(400).end("All fields (username, password, email) are required");
+  const { password, email } = req.body;
+  if ([password, email].some((each) => isNil(each))) {
+    res.status(400).end("Password and email fields are required");
     return;
   }
 
@@ -32,19 +32,17 @@ const userSignUp = async (req, res) => {
   const salt = randomBytes(32);
   const passwordHashed = await argon2.hash(password, { salt }); //https://nodejs.org/api/crypto.html#crypto_crypto_randombytes_size_callback
   const { insertedId } = await mongoConnection.db("push").collection("users").insertOne({
-    userName,
     email,
     password: passwordHashed,
     salt,
     createdDate: new Date().toISOString(),
   });
 
-  const token = insertedId ? generateJWT({ _id: insertedId, userName, email }) : null;
+  const token = insertedId ? generateJWT({ _id: insertedId, email }) : null;
 
   res.send({
     token,
     email,
-    userName,
   });
 };
 
@@ -66,7 +64,6 @@ const userLogin = async (req, res) => {
     res.send({
       token,
       email,
-      userName: userRecord.userName,
     });
   }
 };
@@ -100,9 +97,9 @@ const forgotPassword = async (req, res) => {
       subject: "Push Pirates password reset request",
       date: new Date(),
       html: `
-      <p>Hey ${userRecord.userName},</p>
+      <p>Hey friend,</p>
       <p>Good news! We processed your request to reset your password.</p>
-      <p>Please click on the following link to create a new one. This one time use link will expire in three hours.</p>
+      <p>Please click on the following link to create a new one. This one time use link will self-destruct in three hours.</p>
       <p>${process.env.API_URL}/reset-password?uid=${userRecord._id}&token=${token}</p>
       <p>Best regards,<br>Push Pirates.</p>`,
     },
@@ -147,14 +144,14 @@ const resetPassword = async (req, res) => {
       console.error(err);
       res.status(401).end(err.message);
     } else {
-      const { userId, email, userName } = decoded;
+      const { userId, email } = decoded;
       const salt = randomBytes(32);
       const passwordHashed = await argon2.hash(newPassword, { salt });
       const { matchedCount, modifiedCount } = await mongoConnection
         .db("push")
         .collection("users")
         .updateOne(
-          { _id: ObjectId(userId), email, userName },
+          { _id: ObjectId(userId), email },
           { $set: { password: passwordHashed, salt: salt } },
         );
       if (matchedCount && modifiedCount) {

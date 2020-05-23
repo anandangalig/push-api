@@ -9,8 +9,6 @@ module.exports = (fieldsToValidate = []) => {
         return check(`${field}`).isLength({ min: 8 });
       case "email":
         return check("email").isEmail().normalizeEmail();
-      case "userName":
-        return check("userName").isLength({ min: 2 }).trim().escape();
       default:
         break;
     }
