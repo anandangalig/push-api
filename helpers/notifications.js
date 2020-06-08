@@ -54,9 +54,11 @@ for (let pushToken of tokens) {
   // Construct a message (see https://docs.expo.io/versions/latest/guides/push-notifications)
   messages.push({
     to: pushToken,
-    sound: 'default',
-    body: 'This is a test notification',
-    data: { withSome: 'data' },
+    sound: "default",
+    title: "Push",
+    body: '🏴‍☠️ Arg! Walk the plank',
+    data: { data: "goes here" },
+    _displayInForeground: true,
   })
 }
 
