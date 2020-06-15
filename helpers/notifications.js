@@ -7,7 +7,6 @@ const attachPushToken = async (req, res, next) => {
   try {
     const decodedTokenData = req.body.userID;
     const pushToken = req.body.expoPushToken;
-    console.log(decodedTokenData, pushToken);
     const mongoConnection = await getMongoConnection();
     const userRecord = await mongoConnection
     .db("push")
@@ -33,20 +32,17 @@ const somePushTokens = await mongoConnection
 .find({expoPushToken: {$exists: true}} );
 
 const tokens = [];
-console.log(typeof somePushTokens);
+
 somePushTokens.map((data)=> {
     if(data.expoPushToken === "ExponentPushToken[S9tx57FuskI9P7inf9uceS]"){
-      console.log( 'data', data.expoPushToken);
       tokens.push(data.expoPushToken)
     }
 });
-console.log('first token', await somePushTokens.next());
+
 let expo = new Expo();
 let messages = [];
 for (let pushToken of tokens) {
     
-    console.log('TOKENS',  pushToken);
-    console.log('num tokens', tokens);
   // Each push token looks like ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]
 
   // Check that all your push tokens appear to be valid Expo push tokens
@@ -80,7 +76,7 @@ let tickets = [];
   for (let chunk of chunks) {
     try {
       let ticketChunk = await expo.sendPushNotificationsAsync(chunk);
-      console.log(ticketChunk);
+      // console.log(ticketChunk);
       tickets.push(...ticketChunk);
       // NOTE: If a ticket contains an error code in ticket.details.error, you
       // must handle it appropriately. The error codes are listed in the Expo
@@ -123,7 +119,7 @@ let receiptIdChunks = expo.chunkPushNotificationReceiptIds(receiptIds);
   for (let chunk of receiptIdChunks) {
     try {
       let receipts = await expo.getPushNotificationReceiptsAsync(chunk);
-      console.log(receipts);
+      // console.log(receipts);
 
       // The receipts specify whether Apple or Google successfully received the
       // notification and information about an error, if one occurred.

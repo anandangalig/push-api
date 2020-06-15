@@ -64,8 +64,7 @@ const userLogin = async (req, res) => {
     const token = userRecord ? generateJWT(userRecord) : null;
     res.send({
       token,
-      email,
-      userRecord
+      email
     });
   }
 };
