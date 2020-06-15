@@ -32,10 +32,11 @@ const somePushTokens = await mongoConnection
 .collection("users")
 .find({expoPushToken: {$exists: true}} );
 
-const tokens = []
-somePushTokens.forEach((data)=> {
-    console.log( 'data', data.expoPushToken);
+const tokens = [];
+console.log(typeof somePushTokens);
+somePushTokens.map((data)=> {
     if(data.expoPushToken === "ExponentPushToken[S9tx57FuskI9P7inf9uceS]"){
+      console.log( 'data', data.expoPushToken);
       tokens.push(data.expoPushToken)
     }
 });
@@ -45,6 +46,7 @@ let messages = [];
 for (let pushToken of tokens) {
     
     console.log('TOKENS',  pushToken);
+    console.log('num tokens', tokens);
   // Each push token looks like ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]
 
   // Check that all your push tokens appear to be valid Expo push tokens
