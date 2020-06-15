@@ -16,7 +16,7 @@ const attachPushToken = async (req, res, next) => {
       { _id: ObjectId(decodedTokenData) },
       { $set: {expoPushToken: pushToken} },
     );
-    return userRecord ? userRecord : null;
+    return res.send("You have enabled notifications successfully!");
   } catch (e) {
       console.log(e);
     return res.json(e).status(500);
@@ -34,8 +34,10 @@ const somePushTokens = await mongoConnection
 
 const tokens = []
 somePushTokens.forEach((data)=> {
-    console.log( 'data', data);
-    tokens.push(data.expoPushToken)
+    console.log( 'data', data.expoPushToken);
+    if(data.expoPushToken === "ExponentPushToken[S9tx57FuskI9P7inf9uceS]"){
+      tokens.push(data.expoPushToken)
+    }
 });
 console.log('first token', await somePushTokens.next());
 let expo = new Expo();
