@@ -65,6 +65,7 @@ const userLogin = async (req, res) => {
     res.send({
       token,
       email,
+      userRecord
     });
   }
 };
