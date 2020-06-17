@@ -1,7 +1,7 @@
 const generateJWT = require("./jwt");
 const getMongoConnection = require("./mongoConnect");
 const { userLogin, userSignUp, forgotPassword, resetPassword } = require("./userAuth");
-const {attachPushToken} = require("./notifications");
+const {attachPushToken, scheduleNotifications} = require("./notifications");
 
 module.exports = {
   generateJWT,
@@ -10,5 +10,6 @@ module.exports = {
   userSignUp,
   forgotPassword,
   resetPassword,
-  attachPushToken
+  attachPushToken,
+  scheduleNotifications
 };
