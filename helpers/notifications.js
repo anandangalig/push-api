@@ -24,7 +24,7 @@ const attachPushToken = async (req, res, next) => {
 
 
 
-const scheduleNotifications = async () => {
+const scheduleNotifications = async (req, res) => {
 const mongoConnection = await getMongoConnection();
 const somePushTokens = await mongoConnection
 .db("push")
@@ -142,9 +142,9 @@ let receiptIdChunks = expo.chunkPushNotificationReceiptIds(receiptIds);
     } catch (error) {
       console.error(error);
     }
+    return res.send('success');
   }
 })();
 }
-//Where should this go?
-cron.schedule('0 15 * * *', scheduleNotifications())
-module.exports = {attachPushToken};
+
+module.exports = {attachPushToken, scheduleNotifications};
