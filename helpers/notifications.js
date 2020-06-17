@@ -142,8 +142,8 @@ let receiptIdChunks = expo.chunkPushNotificationReceiptIds(receiptIds);
     } catch (error) {
       console.error(error);
     }
-    return res.send('success');
   }
+  return res.send('success');
 })();
 }
 
