@@ -4,10 +4,9 @@ const { Expo } = require("expo-server-sdk");
 
 const attachPushToken = async (req, res, next) => {
   try {
-    const decodedTokenData = req.body.userID;
     const pushToken = req.body.expoPushToken;
     const mongoConnection = await getMongoConnection();
-    const decodedTokenData = req.tokenData;
+    const decodedTokenData = req.tokenData.data._id;
     const userRecord = await mongoConnection
       .db("push")
       .collection("users")
