@@ -133,7 +133,7 @@ const scheduleNotifications = async (req, res) => {
     }
   })();
 
-  return res.send("success");
+  return res.send("Success! Notifications have been sent.");
 };
 
 module.exports = { attachPushToken, scheduleNotifications };
