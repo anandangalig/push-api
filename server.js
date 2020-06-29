@@ -48,6 +48,8 @@ app.post("/forgot-password", validateInput(["email"]), forgotPassword);
 app.post("/graphql", verifyAndAttachJWTData, attachCurrentUser);
 app.post("/push", verifyAndAttachJWTData, attachPushToken);
 app.post("/run-notifications", verifyAndAttachJWTData, scheduleNotifications);
+
+
 // Connect Express server with Apollo server
 server.applyMiddleware({ app: app });
 

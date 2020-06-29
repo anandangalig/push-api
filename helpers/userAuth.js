@@ -6,6 +6,7 @@ const getMongoConnection = require("./mongoConnect");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const { ObjectId } = require("mongodb");
+const path = require("path");
 
 const userSignUp = async (req, res) => {
   const { password, email } = req.body;
@@ -155,7 +156,7 @@ const resetPassword = async (req, res) => {
           { $set: { password: passwordHashed, salt: salt } },
         );
       if (matchedCount && modifiedCount) {
-        res.send("Your password has been reset successfully!");
+        res.sendFile(path.join(__dirname, "../assets", "password-reset-success.html"));
       }
     }
   });

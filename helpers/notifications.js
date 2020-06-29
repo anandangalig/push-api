@@ -23,14 +23,11 @@ const scheduleNotifications = async (req, res) => {
   const somePushTokens = await mongoConnection
     .db("push")
     .collection("users")
-    .find({ expoPushToken: { $exists: true } });
+    .find({ expoPushToken: { $exists: true } })
+    .toArray();
 
-  const tokens = [];
-
-  somePushTokens.map((data) => {
-    if (data.expoPushToken === "ExponentPushToken[S9tx57FuskI9P7inf9uceS]") {
-      tokens.push(data.expoPushToken);
-    }
+  const tokens = somePushTokens.map((data) => {
+    return data.expoPushToken;
   });
 
   let expo = new Expo();
@@ -49,7 +46,7 @@ const scheduleNotifications = async (req, res) => {
       to: pushToken,
       sound: "default",
       title: "Push",
-      body: "🏴‍☠️ Arg! Walk the plank",
+      body: "🏴‍☠️ Arggg the sun be setting soon! Ye best get your pushes in",
       data: { data: "goes here" },
       _displayInForeground: true,
     });
@@ -136,7 +133,7 @@ const scheduleNotifications = async (req, res) => {
     }
   })();
 
-  return res.send("success");
+  return res.send("Success! Notifications have been sent.");
 };
 
 module.exports = { attachPushToken, scheduleNotifications };
