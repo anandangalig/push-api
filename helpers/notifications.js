@@ -1,11 +1,7 @@
 const { ObjectId } = require("mongodb");
 const getMongoConnection = require("./mongoConnect");
 const { Expo } = require("expo-server-sdk");
-<<<<<<< HEAD
 const getToken = require("../middleware/verifyAndAttachJWTData");
-=======
-const cron = require("node-cron");
->>>>>>> 30d77096642d2767332e51f5538f88ea3c4c940f
 
 const attachPushToken = async (req, res, next) => {
   try {
@@ -16,11 +12,7 @@ const attachPushToken = async (req, res, next) => {
     const userRecord = await mongoConnection
       .db("push")
       .collection("users")
-<<<<<<< HEAD
       .updateOne({ userToken: ObjectId(userToken) }, { $set: { expoPushToken: pushToken } });
-=======
-      .updateOne({ _id: ObjectId(decodedTokenData) }, { $set: { expoPushToken: pushToken } });
->>>>>>> 30d77096642d2767332e51f5538f88ea3c4c940f
     return res.send("You have enabled notifications successfully!");
   } catch (e) {
     console.log(e);
