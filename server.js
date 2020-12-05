@@ -9,6 +9,7 @@ const { attachCurrentUser, verifyAndAttachJWTData, validateInput } = require("./
 const {
   userLogin,
   userSignUp,
+  oAuthSignIn,
   forgotPassword,
   resetPassword,
   attachPushToken,
@@ -38,6 +39,7 @@ app.use(bodyParser.urlencoded({ extended: true })); //allows accessto URL params
 // Handle user signup and login:
 app.post("/login", userLogin);
 app.post("/signup", validateInput(["password", "email"]), userSignUp);
+app.post("/sign-in-oath", oAuthSignIn);
 
 // Handle password reset:
 app.get("/reset-password", (_, res) => res.sendFile(__dirname + "/assets/password-reset.html"));
@@ -48,7 +50,6 @@ app.post("/forgot-password", validateInput(["email"]), forgotPassword);
 app.post("/graphql", verifyAndAttachJWTData, attachCurrentUser);
 app.post("/push", verifyAndAttachJWTData, attachPushToken);
 app.post("/run-notifications", verifyAndAttachJWTData, scheduleNotifications);
-
 
 // Connect Express server with Apollo server
 server.applyMiddleware({ app: app });

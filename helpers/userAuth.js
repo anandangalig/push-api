@@ -64,9 +64,45 @@ const userLogin = async (req, res) => {
     const token = userRecord ? generateJWT(userRecord) : null;
     res.send({
       token,
-      email
+      email,
     });
   }
+};
+
+const oAuthSignIn = async (req, res) => {
+  const { oAuthType, token } = req.body;
+  console.log({ oAuthType, token });
+
+  // 1. Verify the token with respective oAuth service
+  switch (oAuthType) {
+    case "google":
+      break;
+
+    default:
+      break;
+  }
+  // 2. If good, extract email, user name, UUID from response
+  // 3. Look up email in DB, if exists - just send JWT, if new - create record and send JWT
+
+  // const mongoConnection = await getMongoConnection();
+  // const userRecord = await mongoConnection.db("push").collection("users").findOne({ email });
+
+  // if (!userRecord) {
+  //   res.status(404).end("User Not Found");
+  // } else {
+  //   const correctPassword = await argon2.verify(userRecord.password, password);
+  //   if (!correctPassword) {
+  //     res.status(401).end("Incorrect Password");
+  //     return;
+  //   }
+
+  //   const token = userRecord ? generateJWT(userRecord) : null;
+  //   res.send({
+  //     token,
+  //     email,
+  //   });
+  // }
+  res.send({ hi: "hello" });
 };
 
 const forgotPassword = async (req, res) => {
@@ -165,6 +201,7 @@ const resetPassword = async (req, res) => {
 module.exports = {
   userSignUp,
   userLogin,
+  oAuthSignIn,
   forgotPassword,
   resetPassword,
 };
