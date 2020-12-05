@@ -1,12 +1,14 @@
 const argon2 = require("argon2");
 const { randomBytes } = require("crypto");
+const { OAuth2Client } = require("google-auth-library");
 const { isNil } = require("ramda");
-const { generateJWT, generatePasswordResetToken } = require("./jwt");
-const getMongoConnection = require("./mongoConnect");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const { ObjectId } = require("mongodb");
 const path = require("path");
+
+const getMongoConnection = require("./mongoConnect");
+const { generateJWT, generatePasswordResetToken } = require("./jwt");
 
 const userSignUp = async (req, res) => {
   const { password, email } = req.body;
@@ -73,36 +75,46 @@ const oAuthSignIn = async (req, res) => {
   const { oAuthType, token } = req.body;
   console.log({ oAuthType, token });
 
-  // 1. Verify the token with respective oAuth service
   switch (oAuthType) {
-    case "google":
-      break;
+    case "google": {
+      const client = new OAuth2Client(process.env.GOOGLE_OATH_CLIENT_ID);
+      const verify = async () => {
+        const ticket = await client.verifyIdToken({
+          idToken: token,
+          audience: process.env.GOOGLE_OATH_CLIENT_ID,
+        });
+        return ticket.getPayload();
+      };
 
+      const { email, email_verified, exp } = await verify().catch(console.error);
+      const currentTimestampInSeconds = Date.now() / 1000;
+
+      if (email_verified && exp > currentTimestampInSeconds) {
+        const mongoConnection = await getMongoConnection();
+        let userRecord = await mongoConnection.db("push").collection("users").findOne({ email });
+        console.log("userRecord", userRecord);
+        if (userRecord) {
+          res.send({
+            token: generateJWT(userRecord),
+            email,
+          });
+        } else {
+          const { insertedId } = await mongoConnection.db("push").collection("users").insertOne({
+            email,
+            createdDate: new Date().toISOString(),
+          });
+          res.send({
+            token: generateJWT({ _id: insertedId, email }),
+            email,
+          });
+        }
+      }
+      break;
+    }
     default:
+      res.status(400).end("oAuth Sign In could not be completed");
       break;
   }
-  // 2. If good, extract email, user name, UUID from response
-  // 3. Look up email in DB, if exists - just send JWT, if new - create record and send JWT
-
-  // const mongoConnection = await getMongoConnection();
-  // const userRecord = await mongoConnection.db("push").collection("users").findOne({ email });
-
-  // if (!userRecord) {
-  //   res.status(404).end("User Not Found");
-  // } else {
-  //   const correctPassword = await argon2.verify(userRecord.password, password);
-  //   if (!correctPassword) {
-  //     res.status(401).end("Incorrect Password");
-  //     return;
-  //   }
-
-  //   const token = userRecord ? generateJWT(userRecord) : null;
-  //   res.send({
-  //     token,
-  //     email,
-  //   });
-  // }
-  res.send({ hi: "hello" });
 };
 
 const forgotPassword = async (req, res) => {

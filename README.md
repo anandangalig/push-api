@@ -23,6 +23,7 @@
 JWT_SIGNATURE = ""
 GMAIL_USERNAME = ""
 GMAIL_PASSWORD = ""
+GOOGLE_OATH_CLIENT_ID = "" (can be found in https://console.developers.google.com/apis/credentials using team@rumble.capital account)
 API_URL = "http://localhost:4000"
 MONGO_ATLAS_URI = "mongodb+srv://username:password@push-cluster-abswp.mongodb.net/test?retryWrites=true&w=majority"
 ```
