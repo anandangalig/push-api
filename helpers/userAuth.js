@@ -71,43 +71,47 @@ const userLogin = async (req, res) => {
   }
 };
 
-const oAuthSignIn = async (req, res) => {
-  const { oAuthType, token } = req.body;
-  console.log({ oAuthType, token });
-
+const oAuthSignIn = async ({ oAuthType, token }, res) => {
   switch (oAuthType) {
     case "google": {
-      const client = new OAuth2Client(process.env.GOOGLE_OATH_CLIENT_ID);
-      const verify = async () => {
-        const ticket = await client.verifyIdToken({
-          idToken: token,
-          audience: process.env.GOOGLE_OATH_CLIENT_ID,
-        });
-        return ticket.getPayload();
-      };
+      try {
+        const client = new OAuth2Client(process.env.GOOGLE_OATH_CLIENT_ID);
+        const verify = async () => {
+          const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: process.env.GOOGLE_OATH_CLIENT_ID,
+          });
+          return ticket.getPayload();
+        };
 
-      const { email, email_verified, exp } = await verify().catch(console.error);
-      const currentTimestampInSeconds = Date.now() / 1000;
+        const { email, email_verified, exp } = await verify().catch(console.error);
+        const currentTimestampInSeconds = Date.now() / 1000;
 
-      if (email_verified && exp > currentTimestampInSeconds) {
-        const mongoConnection = await getMongoConnection();
-        let userRecord = await mongoConnection.db("push").collection("users").findOne({ email });
-        console.log("userRecord", userRecord);
-        if (userRecord) {
-          res.send({
-            token: generateJWT(userRecord),
-            email,
-          });
-        } else {
-          const { insertedId } = await mongoConnection.db("push").collection("users").insertOne({
-            email,
-            createdDate: new Date().toISOString(),
-          });
-          res.send({
-            token: generateJWT({ _id: insertedId, email }),
-            email,
-          });
+        if (email_verified && exp > currentTimestampInSeconds) {
+          const mongoConnection = await getMongoConnection();
+          const userRecord = await mongoConnection
+            .db("push")
+            .collection("users")
+            .findOne({ email });
+
+          if (userRecord) {
+            res.send({
+              token: generateJWT(userRecord),
+              email,
+            });
+          } else {
+            const { insertedId } = await mongoConnection.db("push").collection("users").insertOne({
+              email,
+              createdDate: new Date().toISOString(),
+            });
+            res.send({
+              token: generateJWT({ _id: insertedId, email }),
+              email,
+            });
+          }
         }
+      } catch (e) {
+        console.error(e);
       }
       break;
     }
