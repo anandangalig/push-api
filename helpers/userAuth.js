@@ -71,7 +71,8 @@ const userLogin = async (req, res) => {
   }
 };
 
-const oAuthSignIn = async ({ oAuthType, token }, res) => {
+const oAuthSignIn = async (req, res) => {
+  const { oAuthType, token } = req.body;
   switch (oAuthType) {
     case "google": {
       try {
