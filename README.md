@@ -23,11 +23,14 @@
 JWT_SIGNATURE = ""
 GMAIL_USERNAME = ""
 GMAIL_PASSWORD = ""
+GOOGLE_OATH_CLIENT_ID = "" (can be found in https://console.developers.google.com/apis/credentials using team@rumble.capital account)
 API_URL = "http://localhost:4000"
 MONGO_ATLAS_URI = "mongodb+srv://username:password@push-cluster-abswp.mongodb.net/test?retryWrites=true&w=majority"
 ```
 
----
+When running the Expo app at the same time from your local, send your requests to the LAN IP address of your machine, and not the public IP address or http://localhost or http://127.0.0.1
+
+To find your LAN IP address on a Mac, run `ipconfig getifaddr en1` from the command line.
 
 **Express Related:**
 

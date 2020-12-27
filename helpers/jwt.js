@@ -9,7 +9,7 @@ const generateJWT = ({ _id, email }) => {
       },
     },
     process.env.JWT_SIGNATURE,
-    { expiresIn: "90 days" },
+    { expiresIn: "90 days", algorithm: "HS256" },
   );
 };
 

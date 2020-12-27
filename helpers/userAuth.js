@@ -1,12 +1,14 @@
 const argon2 = require("argon2");
 const { randomBytes } = require("crypto");
+const { OAuth2Client } = require("google-auth-library");
 const { isNil } = require("ramda");
-const { generateJWT, generatePasswordResetToken } = require("./jwt");
-const getMongoConnection = require("./mongoConnect");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const { ObjectId } = require("mongodb");
 const path = require("path");
+
+const getMongoConnection = require("./mongoConnect");
+const { generateJWT, generatePasswordResetToken } = require("./jwt");
 
 const userSignUp = async (req, res) => {
   const { password, email } = req.body;
@@ -64,8 +66,59 @@ const userLogin = async (req, res) => {
     const token = userRecord ? generateJWT(userRecord) : null;
     res.send({
       token,
-      email
+      email,
     });
+  }
+};
+
+const oAuthSignIn = async (req, res) => {
+  const { oAuthType, token } = req.body;
+  switch (oAuthType) {
+    case "google": {
+      try {
+        const client = new OAuth2Client(process.env.GOOGLE_OATH_CLIENT_ID);
+        const verify = async () => {
+          const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: process.env.GOOGLE_OATH_CLIENT_ID,
+          });
+          return ticket.getPayload();
+        };
+
+        const { email, email_verified, exp } = await verify().catch(console.error);
+        const currentTimestampInSeconds = Date.now() / 1000;
+
+        if (email_verified && exp > currentTimestampInSeconds) {
+          const mongoConnection = await getMongoConnection();
+          const userRecord = await mongoConnection
+            .db("push")
+            .collection("users")
+            .findOne({ email });
+
+          if (userRecord) {
+            res.send({
+              token: generateJWT(userRecord),
+              email,
+            });
+          } else {
+            const { insertedId } = await mongoConnection.db("push").collection("users").insertOne({
+              email,
+              createdDate: new Date().toISOString(),
+            });
+            res.send({
+              token: generateJWT({ _id: insertedId, email }),
+              email,
+            });
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+      break;
+    }
+    default:
+      res.status(400).end("oAuth Sign In could not be completed");
+      break;
   }
 };
 
@@ -165,6 +218,7 @@ const resetPassword = async (req, res) => {
 module.exports = {
   userSignUp,
   userLogin,
+  oAuthSignIn,
   forgotPassword,
   resetPassword,
 };
