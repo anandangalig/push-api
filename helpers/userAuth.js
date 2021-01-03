@@ -72,11 +72,15 @@ const userLogin = async (req, res) => {
 };
 
 const oAuthSignIn = async (req, res) => {
-  const { oAuthType, token } = req.body;
+  const { oAuthType, token, os } = req.body;
   switch (oAuthType) {
     case "google": {
       try {
-        const client = new OAuth2Client(process.env.GOOGLE_OATH_CLIENT_ID);
+        const clienID =
+          os === "android"
+            ? process.env.GOOGLE_SIGN_IN_CLIENT_ID_ANDROID
+            : process.env.GOOGLE_SIGN_IN_CLIENT_ID_IOS;
+        const client = new OAuth2Client(clienID);
         const verify = async () => {
           const ticket = await client.verifyIdToken({
             idToken: token,
