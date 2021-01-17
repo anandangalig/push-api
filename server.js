@@ -39,7 +39,7 @@ app.use(bodyParser.urlencoded({ extended: true })); //allows accessto URL params
 // Handle user signup and login:
 app.post("/login", userLogin);
 app.post("/signup", validateInput(["password", "email"]), userSignUp);
-app.post("/sign-in-oath", oAuthSignIn);
+app.post("/sign-in-oauth", oAuthSignIn);
 
 // Handle password reset:
 app.get("/reset-password", (_, res) => res.sendFile(__dirname + "/assets/password-reset.html"));
