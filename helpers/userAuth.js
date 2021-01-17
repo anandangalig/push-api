@@ -72,11 +72,15 @@ const userLogin = async (req, res) => {
 };
 
 const oAuthSignIn = async (req, res) => {
-  const { oAuthType, token } = req.body;
+  const { oAuthType, token, os } = req.body;
   switch (oAuthType) {
     case "google": {
       try {
-        const client = new OAuth2Client(process.env.GOOGLE_OATH_CLIENT_ID);
+        const clienID =
+          os === "android"
+            ? process.env.GOOGLE_SIGN_IN_CLIENT_ID_ANDROID
+            : process.env.GOOGLE_SIGN_IN_CLIENT_ID_IOS;
+        const client = new OAuth2Client(clienID);
         const verify = async () => {
           const ticket = await client.verifyIdToken({
             idToken: token,
@@ -137,16 +141,22 @@ const forgotPassword = async (req, res) => {
   const token = userRecord ? generatePasswordResetToken(userRecord) : null;
 
   const transporter = nodemailer.createTransport({
-    service: "Gmail",
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
     auth: {
+      type: "OAuth2",
       user: process.env.GMAIL_USERNAME,
-      pass: process.env.GMAIL_PASSWORD,
+      clientId: process.env.GMAIL_CLIENT_ID,
+      clientSecret: process.env.GMAIL_SECRET,
+      refreshToken: process.env.GMAIL_REFRESH_TOKEN,
+      accessToken: process.env.GMAIL_ACCESS_TOKEN,
+      expires: 3599,
     },
   });
-
   transporter.sendMail(
     {
-      from: "hello.xyzapp@gmail.com",
+      from: "team@rumble.capital",
       to: `${req.body.email}`,
       subject: "Push Pirates password reset request",
       date: new Date(),
@@ -155,7 +165,7 @@ const forgotPassword = async (req, res) => {
       <p>Good news! We processed your request to reset your password.</p>
       <p>Please click on the following link to create a new one. This one time use link will self-destruct in three hours.</p>
       <p>${process.env.API_URL}/reset-password?uid=${userRecord._id}&token=${token}</p>
-      <p>Best regards,<br>Push Pirates.</p>`,
+      <p>Best regards,<br>Push App Team.</p>`,
     },
     (error, info) => {
       if (error) {
